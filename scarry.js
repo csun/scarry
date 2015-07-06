@@ -44,7 +44,33 @@ var scarry = {};
     var sprite = new PIXI.Sprite.fromImage(actor.image);
 
     sprite.position = actor.position;
+
+    for(var i = 0; i < actor.triggers.length; i++) {
+      addTriggerToSprite(sprite, actor.triggers[i])
+    }
+
     this.container.addChild(sprite);
+  }
+
+  function addTriggerToSprite(sprite, trigger) {
+    sprite.interactive = true
+
+    var fn
+
+    if(trigger.action === 'changeScene') {
+      fn = generateChangeSceneFunction(trigger)
+    }
+
+    if(trigger.event === 'onClick') {
+      sprite.on('mouseup', fn)
+      sprite.on('touchend', fn)
+    }
+  }
+
+  function generateChangeSceneFunction(trigger) {
+    return function() {
+      alert(trigger.destination)
+    }
   }
 
   Stage.prototype.animate = function() {
