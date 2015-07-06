@@ -47,6 +47,7 @@ var scarry = {};
     var sprite = spriteFromImageName(actor.image);
 
     sprite.position = actor.position;
+    sprite.stage = this;
 
     for(var i = 0; i < actor.triggers.length; i++) {
       addTriggerToSprite(sprite, actor.triggers[i]);
@@ -72,7 +73,7 @@ var scarry = {};
 
   function generateChangeSceneFunction(trigger) {
     return function() {
-      alert(trigger.destination);
+      this.stage.loadScene(trigger.destination);
     };
   }
 
