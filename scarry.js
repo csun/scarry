@@ -20,9 +20,9 @@ var scarry = {};
     this.setBackground(scene.background);
 
     for(var i = 0; i < scene.actors.length; i++) {
-      this.addActor(scene.actors[i])
+      this.addActor(scene.actors[i]);
     }
-  }
+  };
 
   Stage.prototype.resetCamera = function() {
     this.container.position.x = 0;
@@ -32,13 +32,13 @@ var scarry = {};
     this.container.scale.y = this.realSize.height / this.sceneSize.height;
 
     this.container.rotation = 0;
-  }
+  };
 
   Stage.prototype.setBackground = function(imgName) {
     var sprite = new PIXI.Sprite.fromImage(imgName);
 
     this.container.addChild(sprite);
-  }
+  };
 
   Stage.prototype.addActor = function(actor) {
     var sprite = new PIXI.Sprite.fromImage(actor.image);
@@ -46,62 +46,62 @@ var scarry = {};
     sprite.position = actor.position;
 
     for(var i = 0; i < actor.triggers.length; i++) {
-      addTriggerToSprite(sprite, actor.triggers[i])
+      addTriggerToSprite(sprite, actor.triggers[i]);
     }
 
     this.container.addChild(sprite);
-  }
+  };
 
   function addTriggerToSprite(sprite, trigger) {
-    sprite.interactive = true
+    sprite.interactive = true;
 
-    var fn
+    var fn;
 
     if(trigger.action === 'changeScene') {
-      fn = generateChangeSceneFunction(trigger)
+      fn = generateChangeSceneFunction(trigger);
     }
 
     if(trigger.event === 'onClick') {
-      sprite.on('mouseup', fn)
-      sprite.on('touchend', fn)
+      sprite.on('mouseup', fn);
+      sprite.on('touchend', fn);
     }
   }
 
   function generateChangeSceneFunction(trigger) {
     return function() {
-      alert(trigger.destination)
-    }
+      alert(trigger.destination);
+    };
   }
 
   Stage.prototype.animate = function() {
 
-  }
+  };
 
   Stage.prototype.render = function() {
     this.renderer.render(this.container);
-  }
+  };
 
 
   scarry.init = function() {
     var realSize = {
       width: 1280,
       height: 720
-    }
+    };
 
     var sceneSize = {
       width: 2560,
       height: 1440
-    }
+    };
 
     scarry.stage = new Stage(realSize, sceneSize);
 
     document.body.appendChild(scarry.stage.renderer.view);
-    scarry.animate()
-  }
+    scarry.animate();
+  };
 
   scarry.animate = function() {
     requestAnimationFrame(scarry.animate);
     scarry.stage.animate();
     scarry.stage.render();
-  }
+  };
 })();
