@@ -5,18 +5,21 @@ var scarry = {};
   // A Stage has real pixel dimensions (which control absolute
   // positioning on screen) and scene dimensions, which are
   // used to position assets relative to their actual sizes
-  function Stage(realSize, sceneSize) {
+  function Stage(realSize) {
     this.renderer = PIXI.autoDetectRenderer(realSize.width, realSize.height);
+
     this.realSize = realSize;
-    this.sceneSize = sceneSize;
+    this.scenes = {};
+    this.sceneSize = { width:0, height: 0 };
 
     this.container = new PIXI.Container();
   }
 
-  Stage.prototype.loadScene = function(scene) {
+  Stage.prototype.loadScene = function(sceneName) {
     this.container.removeChildren();
     this.resetCamera();
 
+    var scene = this.scenes[sceneName];
     this.setBackground(scene.background);
 
     for(var i = 0; i < scene.actors.length; i++) {
@@ -34,14 +37,14 @@ var scarry = {};
     this.container.rotation = 0;
   };
 
-  Stage.prototype.setBackground = function(imgName) {
-    var sprite = new PIXI.Sprite.fromImage(imgName);
+  Stage.prototype.setBackground = function(imageName) {
+    var sprite = spriteFromImageName(imageName);
 
     this.container.addChild(sprite);
   };
 
   Stage.prototype.addActor = function(actor) {
-    var sprite = new PIXI.Sprite.fromImage(actor.image);
+    var sprite = spriteFromImageName(actor.image);
 
     sprite.position = actor.position;
 
@@ -73,6 +76,10 @@ var scarry = {};
     };
   }
 
+  function spriteFromImageName(imageName) {
+    return new PIXI.Sprite(PIXI.loader.resources[imageName].texture);
+  }
+
   Stage.prototype.animate = function() {
 
   };
@@ -82,26 +89,59 @@ var scarry = {};
   };
 
 
-  scarry.init = function() {
-    var realSize = {
-      width: 1280,
-      height: 720
-    };
+  scarry.init = function(options) {
+    getJSON(options.storyFile, function(story, err) {
+      if(err) {
+        alert(err);
+        return;
+      }
 
-    var sceneSize = {
-      width: 2560,
-      height: 1440
-    };
+      scarry.stage = new Stage(options.size, story.sceneSize);
+      scarry.stage.scenes = story.scenes;
+      scarry.stage.sceneSize = story.sceneSize;
 
-    scarry.stage = new Stage(realSize, sceneSize);
+      document.body.appendChild(scarry.stage.renderer.view);
+      
+      for(var asset in story.assets) {
+        PIXI.loader.add(asset, story.assets[asset]);
+      }
 
-    document.body.appendChild(scarry.stage.renderer.view);
-    scarry.animate();
+      PIXI.loader.once('complete', function() {
+        scarry.stage.loadScene(story.entryScene);
+        scarry.run();
+      });
+
+      PIXI.loader.load();
+    });
   };
 
-  scarry.animate = function() {
-    requestAnimationFrame(scarry.animate);
+  scarry.run = function() {
+    requestAnimationFrame(scarry.run);
     scarry.stage.animate();
     scarry.stage.render();
   };
+
+  function getJSON(url, callback) {
+    // Source: http://youmightnotneedjquery.com/
+
+    var request = new XMLHttpRequest();
+    request.open('GET', url, true);
+
+    request.onload = function() {
+      if (request.status >= 200 && request.status < 400) {
+        var data = JSON.parse(request.responseText);
+        callback(data);
+      }
+      else {
+        callback(null, 'There was an error accessing the json.');
+      }
+    };
+
+    request.onerror = function() {
+      callback(null, 'There was an error connecting to the destination.');
+    };
+
+    request.send();
+  }
+
 })();
