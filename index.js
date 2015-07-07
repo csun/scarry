@@ -1,0 +1,1 @@
+window.scarry = require('./src/scarry')

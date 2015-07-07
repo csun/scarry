@@ -1,0 +1,13 @@
+{
+  "name": "scarry",
+  "version": "0.0.1",
+  "description": "Scarry is a library for creating interactive storybooks.",
+  "author": "Cameron Sun",
+  "dependencies": {
+    "pixi.js": "^3.0.7"
+  },
+  "devDependencies": {
+    "browserify": "^10.2.4",
+    "jshint": "^2.8.0"
+  }
+}
