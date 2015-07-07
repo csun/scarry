@@ -51,6 +51,17 @@ Stage.prototype.createActor = function(actorData) {
   this.container.addChild(actor.sprite);
 };
 
+// We opt for a broadcast model vs pubsub for a variety of reasons:
+// Cleanup is easier when we change scenes (frequently), assumed 
+// low subscriber counts and frequency of message sends, and
+// assumed high ratio of actors in a scene responding to any
+// given event.
+Stage.prototype.broadcastTrigger = function(event, data) {
+  for(var i = 0; i < this.actors.length; i++) {
+    this.actors[i].handleTrigger(event, data);
+  }
+};
+
 Stage.prototype.animate = function(dt) {
   for(var i = 0; i < this.actors.length; i++) {
     this.actors[i].animate(dt);

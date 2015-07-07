@@ -32,7 +32,7 @@ Actor.prototype.createTriggers = function(triggers) {
   var actor = this;
   if('onClick' in this.triggers) {
     var onClick = function() {
-      actor.activateTrigger('onClick');
+      actor.handleTrigger('onClick', null);
     };
 
     this.sprite.interactive = true;
@@ -47,16 +47,19 @@ Actor.prototype.createAnimations = function(animations) {
   }
 };
 
-Actor.prototype.activateTrigger = function(triggerName) {
+Actor.prototype.handleTrigger = function(triggerName, data) {
   if(triggerName in this.triggers) {
     for(var i = 0; i < this.triggers[triggerName].length; i++) {
       var trigger = this.triggers[triggerName][i];
 
       if(trigger.action === 'changeScene') {
-        this.stage.loadScene(trigger.destination);
+        this.stage.loadScene(trigger.data.destination);
       }
       else if(trigger.action === 'startAnimation') {
-        this.animations[trigger.animation].start();
+        this.animations[trigger.data.animation].start();
+      }
+      else if(trigger.action === 'broadcastTrigger') {
+        this.stage.broadcastTrigger(trigger.data.name, trigger.data.data);
       }
     }
   }
