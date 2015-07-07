@@ -55,9 +55,9 @@ var scarry = {};
     return new PIXI.Sprite(PIXI.loader.resources[imageName].texture);
   }
 
-  Stage.prototype.animate = function() {
+  Stage.prototype.animate = function(dt) {
     for(var i = 0; i < this.actors.length; i++) {
-      this.actors[i].animate();
+      this.actors[i].animate(dt);
     }
   };
 
@@ -72,8 +72,14 @@ var scarry = {};
     this.stage = stage;
 
     this.triggers = {};
+    this.animations = {};
 
-    this.createTriggers(options.triggers);
+    if(options.triggers) {
+      this.createTriggers(options.triggers);
+    }
+    if(options.animations) {
+      this.createAnimations(options.animations);
+    }
   }
 
   Actor.prototype.createTriggers = function(triggers) {
@@ -100,6 +106,12 @@ var scarry = {};
     }
   };
 
+  Actor.prototype.createAnimations = function(animations) {
+    for(var animationName in animations) {
+      this.animations[animationName] = new Animation(this.sprite, animations[animationName]);
+    }
+  };
+
   Actor.prototype.activateTrigger = function(triggerName) {
     if(triggerName in this.triggers) {
       for(var i = 0; i < this.triggers[triggerName].length; i++) {
@@ -108,12 +120,72 @@ var scarry = {};
         if(trigger.action === 'changeScene') {
           this.stage.loadScene(trigger.destination);
         }
+        else if(trigger.action === 'startAnimation') {
+          this.animations[trigger.animation].start();
+        }
       }
     }
   };
 
-  Actor.prototype.animate = function() {
-    
+  Actor.prototype.animate = function(dt) {
+    for(var animationName in this.animations) {
+      if(this.animations[animationName].active) {
+        this.animations[animationName].continue(dt);
+      } 
+    }
+  };
+
+
+  function Animation(sprite, options) {
+    this.sprite = sprite;
+    this.frames = options.frames;
+
+    this.active = false;
+    this.resetState();
+    this.playCount = 0;
+  }
+
+  Animation.prototype.resetState = function() {
+    this.currentFrame = 0;
+    this.frameElapsed = 0;
+    this.remainingDelta = 0;
+  };
+
+  Animation.prototype.start = function() {
+    this.active = true;
+    this.resetState();
+    this.playCount += 1;
+  };
+
+  Animation.prototype.continue = function(dt) {
+    // ADD DT TO GENERAL ANIMATION FUNCTIONS
+    this.remainingDelta = dt;
+
+    while(this.currentFrame < this.frames.length && this.remainingDelta > 0) {
+      this.handleFrame();
+      if(this.frameElapsed >= this.frames[this.currentFrame].time) {
+        this.currentFrame++;
+      }
+    }
+
+    if(this.currentFrame >= this.frames.length) {
+      // Animation is done
+      this.active = false;
+    }
+  };
+
+  Animation.prototype.handleFrame = function() {
+    var frame = this.frames[this.currentFrame];
+    var usableTime = Math.min(this.remainingDelta, frame.time - this.frameElapsed);
+    var percentOfTotal = usableTime / frame.time;
+
+    if(frame.type === 'moveRelative') {
+      this.sprite.position.x += (frame.movement.x * percentOfTotal);
+      this.sprite.position.y += (frame.movement.y * percentOfTotal);
+    }
+
+    this.remainingDelta -= usableTime;
+    this.frameElapsed += usableTime;
   };
 
 
@@ -136,22 +208,26 @@ var scarry = {};
 
       PIXI.loader.once('complete', function() {
         scarry.stage.loadScene(story.entryScene);
-        scarry.run();
+        requestAnimationFrame(scarry.animationFrame);
       });
 
       PIXI.loader.load();
     });
   };
 
-  scarry.run = function() {
-    requestAnimationFrame(scarry.run);
-    scarry.stage.animate();
-    scarry.stage.render();
+  scarry.animationFrame = function(timestamp) {
+    if(scarry.lastFrameTimestamp) {
+      scarry.stage.animate(timestamp - scarry.lastFrameTimestamp);
+      scarry.stage.render();
+    }
+
+    scarry.lastFrameTimestamp = timestamp;
+
+    requestAnimationFrame(scarry.animationFrame);
   };
 
   function getJSON(url, callback) {
     // Source: http://youmightnotneedjquery.com/
-
     var request = new XMLHttpRequest();
     request.open('GET', url, true);
 
