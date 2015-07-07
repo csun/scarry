@@ -11,19 +11,21 @@ var scarry = {};
     this.realSize = realSize;
     this.scenes = {};
     this.sceneSize = { width:0, height: 0 };
+    this.actors = [];
 
     this.container = new PIXI.Container();
   }
 
   Stage.prototype.loadScene = function(sceneName) {
     this.container.removeChildren();
+    this.actors = [];
     this.resetCamera();
 
     var scene = this.scenes[sceneName];
     this.setBackground(scene.background);
 
-    for(var i = 0; i < scene.actors.length; i++) {
-      this.addActor(scene.actors[i]);
+    for(var i = 0; scene.actors && i < scene.actors.length; i++) {
+      this.createActor(scene.actors[i]);
     }
   };
 
@@ -43,50 +45,75 @@ var scarry = {};
     this.container.addChild(sprite);
   };
 
-  Stage.prototype.addActor = function(actor) {
-    var sprite = spriteFromImageName(actor.image);
-
-    sprite.position = actor.position;
-    sprite.stage = this;
-
-    for(var i = 0; i < actor.triggers.length; i++) {
-      addTriggerToSprite(sprite, actor.triggers[i]);
-    }
-
-    this.container.addChild(sprite);
+  Stage.prototype.createActor = function(actorData) {
+    var actor = new Actor(this, actorData);
+    this.actors.push(actor);
+    this.container.addChild(actor.sprite);
   };
-
-  function addTriggerToSprite(sprite, trigger) {
-    sprite.interactive = true;
-
-    var fn;
-
-    if(trigger.action === 'changeScene') {
-      fn = generateChangeSceneFunction(trigger);
-    }
-
-    if(trigger.event === 'onClick') {
-      sprite.on('mouseup', fn);
-      sprite.on('touchend', fn);
-    }
-  }
-
-  function generateChangeSceneFunction(trigger) {
-    return function() {
-      this.stage.loadScene(trigger.destination);
-    };
-  }
 
   function spriteFromImageName(imageName) {
     return new PIXI.Sprite(PIXI.loader.resources[imageName].texture);
   }
 
   Stage.prototype.animate = function() {
-
+    for(var i = 0; i < this.actors.length; i++) {
+      this.actors[i].animate();
+    }
   };
 
   Stage.prototype.render = function() {
     this.renderer.render(this.container);
+  };
+
+
+  function Actor(stage, options) {
+    this.sprite = spriteFromImageName(options.image);
+    this.sprite.position = options.position;
+    this.stage = stage;
+
+    this.triggers = {};
+
+    this.createTriggers(options.triggers);
+  }
+
+  Actor.prototype.createTriggers = function(triggers) {
+    for(var triggerType in triggers) {
+      var triggerData = triggers[triggerType];
+
+      if(triggerData instanceof Array) {
+        this.triggers[triggerType] = triggerData;
+      }
+      else {
+        this.triggers[triggerType] = [triggerData];
+      }
+    }
+
+    var actor = this;
+    if('onClick' in this.triggers) {
+      var onClick = function() {
+        actor.activateTrigger('onClick');
+      };
+
+      this.sprite.interactive = true;
+      this.sprite.on('mouseup', onClick);
+      this.sprite.on('touchend', onClick);
+    }
+  };
+
+  Actor.prototype.activateTrigger = function(triggerName) {
+    if(triggerName in this.triggers) {
+      for(var i = 0; i < this.triggers[triggerName].length; i++) {
+        var trigger = this.triggers[triggerName][i];
+
+        if(trigger.action === 'changeScene') {
+          this.stage.loadScene(trigger.destination);
+        }
+      }
+    }
+  };
+
+  Actor.prototype.animate = function() {
+    
   };
 
 
