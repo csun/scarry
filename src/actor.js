@@ -1,8 +1,8 @@
-var Animation = require('./animation');
-var helpers = require('./helpers');
+var MovementAnimation = require('./animation/movementanimation');
+var spriteManager = require('./spritemanager');
 
 function Actor(stage, options) {
-  this.sprite = helpers.spriteFromImageName(options.image);
+  this.sprite = spriteManager.createSprite(options.sprite);
   this.sprite.position = options.position;
   this.stage = stage;
 
@@ -43,7 +43,7 @@ Actor.prototype.createTriggers = function(triggers) {
 
 Actor.prototype.createAnimations = function(animations) {
   for(var animationName in animations) {
-    this.animations[animationName] = new Animation(this.sprite, animations[animationName]);
+    this.animations[animationName] = new MovementAnimation(this.sprite, animations[animationName].frames);
   }
 };
 
@@ -58,6 +58,9 @@ Actor.prototype.handleTrigger = function(triggerName, data) {
       else if(trigger.action === 'startAnimation') {
         this.animations[trigger.data.animation].start();
       }
+      else if(trigger.action === 'startSpriteAnimation') {
+        this.sprite.startAnimation(trigger.data.name);
+      }
       else if(trigger.action === 'broadcastTrigger') {
         this.stage.broadcastTrigger(trigger.data.name, trigger.data.data);
       }
@@ -68,9 +71,11 @@ Actor.prototype.handleTrigger = function(triggerName, data) {
 Actor.prototype.animate = function(dt) {
   for(var animationName in this.animations) {
     if(this.animations[animationName].active) {
-      this.animations[animationName].continue(dt);
+      this.animations[animationName].update(dt);
     } 
   }
+
+  this.sprite.update(dt);
 };
 
 module.exports = Actor;

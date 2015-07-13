@@ -1,6 +1,6 @@
 var helpers = require('./helpers');
-var PIXI = require('pixi.js');
 var Stage = require('./stage');
+var spriteManager = require('./spritemanager');
 
 var scarry = {};
 
@@ -17,16 +17,10 @@ scarry.init = function(options) {
 
     document.body.appendChild(scarry.stage.renderer.view);
     
-    for(var asset in story.assets) {
-      PIXI.loader.add(asset, story.assets[asset]);
-    }
-
-    PIXI.loader.once('complete', function() {
+    spriteManager.load(story.sprites, function() {
       scarry.stage.loadScene(story.entryScene);
       requestAnimationFrame(scarry.animationFrame);
     });
-
-    PIXI.loader.load();
   });
 };
 

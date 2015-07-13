@@ -24,9 +24,4 @@ helpers.getJSON = function(url, callback) {
   request.send();
 };
 
-helpers.spriteFromImageName = function(imageName) {
-  return new PIXI.Sprite(PIXI.loader.resources[imageName].texture);
-};
-
-
 module.exports = helpers;

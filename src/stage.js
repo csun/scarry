@@ -1,6 +1,6 @@
 var PIXI = require('pixi.js');
 var Actor = require('./actor');
-var helpers = require('./helpers');
+var spriteManager = require('./spritemanager');
 
 // A Stage has real pixel dimensions (which control absolute
 // positioning on screen) and scene dimensions, which are
@@ -40,7 +40,7 @@ Stage.prototype.resetCamera = function() {
 };
 
 Stage.prototype.setBackground = function(imageName) {
-  var sprite = helpers.spriteFromImageName(imageName);
+  var sprite = spriteManager.createSprite(imageName);
 
   this.container.addChild(sprite);
 };
