@@ -43,7 +43,8 @@ Actor.prototype.createTriggers = function(triggers) {
 
 Actor.prototype.createAnimations = function(animations) {
   for(var animationName in animations) {
-    this.animations[animationName] = new MovementAnimation(this.sprite, animations[animationName].frames);
+    var animation = animations[animationName];
+    this.animations[animationName] = new MovementAnimation(this.sprite, animation.frames, animation.options);
   }
 };
 

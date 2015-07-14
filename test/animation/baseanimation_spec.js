@@ -68,4 +68,26 @@ describe('BaseAnimation', function() {
     animation.update(FRAME_TIMING * TOTAL_FRAMES);
     expect(animation.percentageAdvances.length).to.equal(TOTAL_FRAMES * 2);
   });
+
+  it('can be played again', function() {
+    animation.start();
+    animation.update(FRAME_TIMING * TOTAL_FRAMES);
+
+    animation.start();
+    animation.update(FRAME_TIMING * TOTAL_FRAMES);
+
+    expect(animation.percentageAdvances.length).to.equal(TOTAL_FRAMES * 2);
+  });
+
+  it('can limit the amount of times it is played', function() {
+    animation = new TestAnimation({ maxPlayCount: 1 });
+
+    animation.start();
+    animation.update(FRAME_TIMING * TOTAL_FRAMES);
+
+    animation.start();
+    animation.update(FRAME_TIMING * TOTAL_FRAMES);
+
+    expect(animation.percentageAdvances.length).to.equal(TOTAL_FRAMES);
+  });
 });

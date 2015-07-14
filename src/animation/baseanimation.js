@@ -4,9 +4,10 @@ function BaseAnimation(options) {
   this.reset();
 
   this.playCount = 0;
-  if(options) {
-    this.loop = options.loop || false;
-  }
+
+  options = options || {};
+  this.loop = options.loop || false;
+  this.maxPlayCount = options.maxPlayCount || -1;
 }
 
 BaseAnimation.prototype.reset = function() {
@@ -18,9 +19,11 @@ BaseAnimation.prototype.reset = function() {
 };
 
 BaseAnimation.prototype.start = function() {
-  this.reset();
-  this.active = true;
-  this.playCount += 1;
+  if(this.maxPlayCount < 0 || this.playCount < this.maxPlayCount) {
+    this.reset();
+    this.active = true;
+    this.playCount += 1;
+  }
 };
 
 BaseAnimation.prototype.update = function(dt) {
