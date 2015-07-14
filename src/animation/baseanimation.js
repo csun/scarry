@@ -1,9 +1,12 @@
 // A baseclass for all animation classes.
 // Not intended to be instantiated alone, should be inherited from.
-function BaseAnimation() {
+function BaseAnimation(options) {
   this.reset();
 
   this.playCount = 0;
+  if(options) {
+    this.loop = options.loop || false;
+  }
 }
 
 BaseAnimation.prototype.reset = function() {
@@ -29,15 +32,15 @@ BaseAnimation.prototype.update = function(dt) {
 };
 
 BaseAnimation.prototype._shouldUpdate = function() {
-  if(!this.active || this._remainingDelta <= 0) {
-    return false;
-  }
-
-  return true;
+  return (this.active && this._remainingDelta > 0 && this._currentFrame < this._totalFrameCount());
 };
 
 BaseAnimation.prototype._currentFrameTiming = function() {
-  return 0;
+  throw new Exception('Not implemented');
+};
+
+BaseAnimation.prototype._totalFrameCount = function() {
+  throw new Exception('Not implemented');
 };
 
 BaseAnimation.prototype._handleCurrentFrame = function() {
@@ -50,12 +53,24 @@ BaseAnimation.prototype._handleCurrentFrame = function() {
   this._frameElapsed += usableTime;
 
   if(this._frameElapsed >= this._currentFrameTiming()) {
-    this._currentFrame++;
+    this._nextFrame();
+  }
+};
+
+BaseAnimation.prototype._nextFrame = function() {
+  this._currentFrame++;
+  this._frameElapsed = 0;
+
+  if(this.loop) {
+    this._currentFrame %= this._totalFrameCount();
+  }
+  else if(this._currentFrame >= this._totalFrameCount()) {
+    this.reset();
   }
 };
 
 BaseAnimation.prototype._advanceFrameByPercentage = function(percentage) {
-  // To be overridden
+  throw new Exception('Not implemented');
 };
 
 module.exports = BaseAnimation;

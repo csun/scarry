@@ -86,7 +86,8 @@ spriteManager.createSprite = function(name) {
   if(spritesheetData[name]) {
     for(var animationName in spritesheetData[name].animations)  {
       var fps = spritesheetData[name].animations[animationName].fps;
-      sprite.animations[animationName] = new SpriteAnimation(sprite, animationFrames[name][animationName], fps);
+      var options = spritesheetData[name].animations[animationName].options;
+      sprite.animations[animationName] = new SpriteAnimation(sprite, animationFrames[name][animationName], fps, options);
     }
   }
   

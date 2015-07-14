@@ -1,19 +1,19 @@
 var BaseAnimation = require('./baseanimation');
 
-function MovementAnimation(sprite, frames) {
-  BaseAnimation.call(this);
-
+function MovementAnimation(sprite, frames, options) {
   this._sprite = sprite;
   this._frames = frames;
+  
+  BaseAnimation.call(this, options);
 }
 MovementAnimation.prototype = Object.create(BaseAnimation.prototype);
 
-MovementAnimation.prototype._shouldUpdate = function() {  
-  return BaseAnimation.prototype._shouldUpdate.call(this) && this._currentFrame < this._frames.length;
-};
-
 MovementAnimation.prototype._currentFrameTiming = function() {
   return this._frames[this._currentFrame].time;
+};
+
+MovementAnimation.prototype._totalFrameCount = function() {
+  return this._frames.length;
 };
 
 MovementAnimation.prototype._advanceFrameByPercentage = function(percentage) {
