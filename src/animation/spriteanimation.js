@@ -12,7 +12,7 @@ SpriteAnimation.prototype = Object.create(BaseAnimation.prototype);
 SpriteAnimation.prototype.reset = function() {
   this._sprite.texture = this._frames[0];
   BaseAnimation.prototype.reset.call(this);
-}
+};
 
 SpriteAnimation.prototype._shouldUpdate = function() {  
   return BaseAnimation.prototype._shouldUpdate.call(this) && this._currentFrame < this._frames.length;
