@@ -19,8 +19,10 @@ MovementAnimation.prototype._totalFrameCount = function() {
 MovementAnimation.prototype._advanceFrameByPercentage = function(percentage) {
   var frame = this._frames[this._currentFrame];
 
-  this._sprite.position.x += (frame.movement.x * percentage);
-  this._sprite.position.y += (frame.movement.y * percentage);
+  if('moveRelative' in frame) {
+    this._sprite.position.x += (frame.moveRelative.x * percentage);
+    this._sprite.position.y += (frame.moveRelative.y * percentage);
+  }
 };
 
 module.exports = MovementAnimation;

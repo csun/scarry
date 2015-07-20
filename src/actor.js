@@ -1,43 +1,48 @@
 var MovementAnimation = require('./animation/movementanimation');
 var spriteManager = require('./spritemanager');
+var TriggerHandler = require('./triggerhandler');
 
 function Actor(stage, options) {
   this.sprite = spriteManager.createSprite(options.sprite);
   this.sprite.position = options.position;
   this.stage = stage;
 
-  this.triggers = {};
-  this.animations = {};
+  this.triggerHandler = new TriggerHandler(options.triggers, this);
+  this._setupInteractiveTriggers();
 
-  if(options.triggers) {
-    this.createTriggers(options.triggers);
-  }
+  this.animations = {};
   if(options.animations) {
     this.createAnimations(options.animations);
   }
 }
 
-Actor.prototype.createTriggers = function(triggers) {
-  for(var triggerType in triggers) {
-    var triggerData = triggers[triggerType];
-
-    if(triggerData instanceof Array) {
-      this.triggers[triggerType] = triggerData;
-    }
-    else {
-      this.triggers[triggerType] = [triggerData];
-    }
-  }
-
+Actor.prototype._setupInteractiveTriggers = function() {
   var actor = this;
-  if('onClick' in this.triggers) {
-    var onClick = function() {
-      actor.handleTrigger('onClick', null);
-    };
+  var onClick = function() {
+    actor.handleTrigger('onClick');
+  };
 
-    this.sprite.interactive = true;
-    this.sprite.on('mouseup', onClick);
-    this.sprite.on('touchend', onClick);
+  this.sprite.interactive = true;
+  this.sprite.on('mouseup', onClick);
+  this.sprite.on('touchend', onClick);
+};
+
+Actor.prototype.handleTrigger = function(triggerName) {
+  this.triggerHandler.handle(triggerName);
+};
+
+Actor.prototype.performTriggerAction = function(action, data) {
+  if(action === 'changeScene') {
+    this.stage.loadScene(data.destination);
+  }
+  else if(action === 'startAnimation') {
+    this.animations[data.animation].start();
+  }
+  else if(action === 'startSpriteAnimation') {
+    this.sprite.startAnimation(data.name);
+  }
+  else if(action === 'broadcastTrigger') {
+    this.stage.broadcastTrigger(data.name, data.data);
   }
 };
 
@@ -45,27 +50,6 @@ Actor.prototype.createAnimations = function(animations) {
   for(var animationName in animations) {
     var animation = animations[animationName];
     this.animations[animationName] = new MovementAnimation(this.sprite, animation.frames, animation.options);
-  }
-};
-
-Actor.prototype.handleTrigger = function(triggerName, data) {
-  if(triggerName in this.triggers) {
-    for(var i = 0; i < this.triggers[triggerName].length; i++) {
-      var trigger = this.triggers[triggerName][i];
-
-      if(trigger.action === 'changeScene') {
-        this.stage.loadScene(trigger.data.destination);
-      }
-      else if(trigger.action === 'startAnimation') {
-        this.animations[trigger.data.animation].start();
-      }
-      else if(trigger.action === 'startSpriteAnimation') {
-        this.sprite.startAnimation(trigger.data.name);
-      }
-      else if(trigger.action === 'broadcastTrigger') {
-        this.stage.broadcastTrigger(trigger.data.name, trigger.data.data);
-      }
-    }
   }
 };
 
