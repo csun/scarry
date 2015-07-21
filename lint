@@ -1,2 +1,0 @@
-#!/bin/sh
-./node_modules/jshint/bin/jshint src test

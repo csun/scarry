@@ -1,2 +1,0 @@
-#!/bin/sh
-./node_modules/browserify/bin/cmd.js index.js -o bin/scarry.js
