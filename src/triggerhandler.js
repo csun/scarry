@@ -9,30 +9,40 @@ function TriggerHandler(triggersData, triggerable) {
 }
 
 TriggerHandler.prototype.loadTriggers = function(triggersData) {
-  this.triggers = {};
+  this.triggerActions = {};
   
   if(!triggersData) {
     return;
   }
 
-  for(var triggerType in triggersData) {
-    var triggerData = triggersData[triggerType];
+  for(var triggerName in triggersData) {
+    var actions = triggersData[triggerName];
 
-    if(triggerData instanceof Array) {
-      this.triggers[triggerType] = triggerData;
+    if(actions instanceof Array) {
+      this.triggerActions[triggerName] = actions;
     }
     else {
-      this.triggers[triggerType] = [triggerData];
+      this.triggerActions[triggerName] = [actions];
+    }
+
+    for(var i = 0; i < this.triggerActions[triggerName].length; i++) {
+      this.triggerActions[triggerName][i].activations = 0;
     }
   }
 };
 
 TriggerHandler.prototype.handle = function(triggerName) {
-  if(triggerName in this.triggers) {
-    for(var i = 0; i < this.triggers[triggerName].length; i++) {
-      var trigger = this.triggers[triggerName][i];
+  if(!(triggerName in this.triggerActions)) {
+    return;
+  }
+  var actions = this.triggerActions[triggerName];
 
-      this.target.performTriggerAction(trigger.action, trigger.data);
+  for(var i = 0; i < actions.length; i++) {
+    var action = actions[i];
+
+    if(!action.maxActivations || (action.activations < action.maxActivations)) {
+      this.target.performTriggerAction(action.action, action.data);
+      action.activations++;
     }
   }
 };
