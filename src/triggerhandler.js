@@ -40,11 +40,26 @@ TriggerHandler.prototype.handle = function(triggerName) {
   for(var i = 0; i < actions.length; i++) {
     var action = actions[i];
 
-    if(!action.maxActivations || (action.activations < action.maxActivations)) {
-      this.target.performTriggerAction(action.action, action.data);
-      action.activations++;
-    }
+    this._activateAction(action);
   }
+};
+
+TriggerHandler.prototype._activateAction = function(action) {
+  if(action.maxActivations && (action.activations >= action.maxActivations)) {
+    return;
+  }
+
+  var target = this.target;
+  var performAction = function() { target.performTriggerAction(action.action, action.data); };
+
+  if(action.delay) {
+    setTimeout(performAction, action.delay);
+  }
+  else {
+    performAction();
+  }
+
+  action.activations++;
 };
 
 module.exports = TriggerHandler;
