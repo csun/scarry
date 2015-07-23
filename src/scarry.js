@@ -11,7 +11,12 @@ scarry.init = function(options) {
       return;
     }
 
-    scarry.stage = new Stage(options.size, story.sceneSize, story.scenes);
+    var stageOptions = {
+      realSize: options.size,
+      sceneSize: story.sceneSize,
+      fonts: story.fonts
+    };
+    scarry.stage = new Stage(story.scenes, stageOptions);
 
     document.body.appendChild(scarry.stage.renderer.view);
     

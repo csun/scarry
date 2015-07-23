@@ -2,21 +2,23 @@ var PIXI = require('pixi.js');
 
 var Actor = require('./actor');
 var Camera = require('./camera');
+var TextManager = require('./textmanager');
 var spriteManager = require('./spritemanager');
 
-// A Stage has real pixel dimensions (which control absolute
-// positioning on screen) and scene dimensions, which are
-// used to position assets relative to their actual sizes
-function Stage(realSize, sceneSize, scenes) {
-  this.renderer = PIXI.autoDetectRenderer(realSize.width, realSize.height);
+function Stage(scenes, options) {
+  this.renderer = PIXI.autoDetectRenderer(options.realSize.width, options.realSize.height);
 
+  // A Stage has real pixel dimensions (which control absolute
+  // positioning on screen) and scene dimensions, which are
+  // used to position assets relative to their actual sizes
   this.baseContainer = new PIXI.Container();
-  this.baseContainer.scale = { x: realSize.width / sceneSize.width, y: realSize.height / sceneSize.height };
+  this.baseContainer.scale = { x: options.realSize.width / options.sceneSize.width, y: options.realSize.height / options.sceneSize.height };
 
   this.container = new PIXI.Container();
   this.baseContainer.addChild(this.container);
 
-  this.camera = new Camera(this.container, sceneSize);
+  this.textManager = new TextManager(options.fonts, this.container);
+  this.camera = new Camera(this.container, options.sceneSize);
 
   this.scenes = scenes;
   this.actors = [];
@@ -25,14 +27,17 @@ function Stage(realSize, sceneSize, scenes) {
 Stage.prototype.loadScene = function(sceneName) {
   var scene = this.scenes[sceneName];
 
-  this.camera.handleSceneChange(scene.camera);
   this.container.removeChildren();
+  this.camera.handleSceneChange(scene.camera);
   this.setBackground(scene.background);
 
   this.actors = [];
   for(var i = 0; scene.actors && i < scene.actors.length; i++) {
     this.createActor(scene.actors[i]);
   }
+
+  // Display here so that text overlays all actors
+  this.textManager.displayText(scene.texts);
 
   this.broadcastTrigger('onLoad');
 };
