@@ -1,0 +1,67 @@
+######################################
+# INCOMPLETE #########################
+######################################
+---
+# Scarry will load this scene first
+entryScene: title
+
+# Defines the base size of all scenes. While scarry may display
+# at a different resolution, all assets and positions will be
+# adjusted proportionally - eg. a 2560x1440 image will always
+# cover the entire stage, even if scarry is rendering at 1280x720.
+sceneSize:
+  width: 2560
+  height: 1440
+
+fonts: 
+  redHelvetica:
+    font: 24px Helvetica
+    color: "#FF0000"
+
+
+# SPRITES ===========================================================
+# All sprites and sprite animations used in scenes are
+# defined here
+sprites:
+  # At its simplest, a sprite can be defined as just an image
+  background: "images/background.jpg"
+
+  # Spritesheets are marked with "type: spritesheet", and
+  # allow for definition of multiple animations from one
+  # file
+  animatedSprite:
+    type: spritesheet
+    file: "images/spritesheet.png"
+
+    # Allows scarry to break the sheet up into an x by y grid of
+    # equally sized images
+    frameCounts: { x: 10, y:3 }
+
+    # The frame displayed when the sprite is loaded
+    defaultFrame: { x: 0, y: 0 }
+
+    animations:
+      walk:
+        startFrame: { x: 0, y: 0 }
+
+        # Frames are increased from left to right, moving down
+        # the spritesheet. In this example, the last frame of the
+        # animation would be (0, 1)
+        count: 11
+        fps: 24
+        options:
+          loop: true
+
+
+# SCENES ===========================================================
+scenes:
+  title:
+    background: background
+    actors:
+      - sprite: animatedSprite
+        position: { x: 100, y: 100 }
+        triggers:
+          onClick:
+            action: changeScene
+            data:
+              destination: scene2
