@@ -1,4 +1,4 @@
-var MovementAnimation = require('./animation/movementanimation');
+var ActorAnimation = require('./animation/actoranimation');
 var spriteManager = require('./spritemanager');
 var TriggerHandler = require('./triggerhandler');
 
@@ -36,7 +36,7 @@ Actor.prototype.performTriggerAction = function(action, data) {
     this.stage.loadScene(data.destination);
   }
   else if(action === 'startAnimation') {
-    this.animations[data.animation].start();
+    this.animations[data.name].start();
   }
   else if(action === 'startSpriteAnimation') {
     this.sprite.startAnimation(data.name);
@@ -44,12 +44,19 @@ Actor.prototype.performTriggerAction = function(action, data) {
   else if(action === 'broadcastTrigger') {
     this.stage.broadcastTrigger(data.name, data.data);
   }
+  else if(action === 'moveRelative') {
+    this.sprite.position.x += data.x;
+    this.sprite.position.y += data.y;
+  }
+  else if(action === 'setHidden') {
+    this.sprite.visible = data;
+  }
 };
 
 Actor.prototype.createAnimations = function(animations) {
   for(var animationName in animations) {
     var animation = animations[animationName];
-    this.animations[animationName] = new MovementAnimation(this.sprite, animation.frames, animation.options);
+    this.animations[animationName] = new ActorAnimation(this, animation.frames, animation.options);
   }
 };
 
