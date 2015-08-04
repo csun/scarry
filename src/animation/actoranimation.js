@@ -20,15 +20,17 @@ ActorAnimation.prototype._advanceFrameByPercentage = function(percentage) {
   var frame = this._frames[this._currentFrame];
 
   for(var action in frame) {
-    var data = processFrameData(action, frame[action]);
+    var data = processFrameData(action, frame[action], percentage);
     this._actor.performTriggerAction(action, data);
   }
 };
 
-function processFrameData(action, data) {
+function processFrameData(action, data, percentage) {
   switch(action) {
     case 'moveRelative':
-      return { x: frame.moveRelative.x * percentage, y: frame.moveRelative.y * percentage };
+      return { x: data.x * percentage, y: data.y * percentage };
+    case 'fadeRelative':
+      return data * percentage;
     default:
       return data;
   }
