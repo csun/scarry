@@ -19,13 +19,19 @@ ActorAnimation.prototype._totalFrameCount = function() {
 ActorAnimation.prototype._advanceFrameByPercentage = function(percentage) {
   var frame = this._frames[this._currentFrame];
 
-  if('moveRelative' in frame) {
-    var movement = { x: frame.moveRelative.x * percentage, y: frame.moveRelative.y * percentage };
-    this._actor.performTriggerAction('moveRelative', movement);
-  }
-  if('setHidden' in frame) {
-    this._actor.performTriggerAction('setHidden', frame.setHidden);
+  for(var action in frame) {
+    var data = processFrameData(action, frame[action]);
+    this._actor.performTriggerAction(action, data);
   }
 };
+
+function processFrameData(action, data) {
+  switch(action) {
+    case 'moveRelative':
+      return { x: frame.moveRelative.x * percentage, y: frame.moveRelative.y * percentage };
+    default:
+      return data;
+  }
+}
 
 module.exports = ActorAnimation;

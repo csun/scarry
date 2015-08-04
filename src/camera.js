@@ -17,6 +17,11 @@ Camera.prototype.handleSceneChange = function(cameraData) {
 
   cameraData = cameraData || {};
 
+  if(cameraData.position) {
+    this.container.position.x = -cameraData.position.x;
+    this.container.position.y = -cameraData.position.y;
+  }
+
   this.triggerHandler.loadTriggers(cameraData.triggers);
   this.loadAnimations(cameraData.animations);
 };

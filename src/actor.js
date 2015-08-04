@@ -5,6 +5,10 @@ var TriggerHandler = require('./triggerhandler');
 function Actor(stage, options) {
   this.sprite = spriteManager.createSprite(options.sprite);
   this.sprite.position = options.position;
+
+  this.sprite.scale.x = options.scale || 1;
+  this.sprite.scale.y = options.scale || 1;
+
   this.stage = stage;
 
   this.triggerHandler = new TriggerHandler(options.triggers, this);
@@ -32,24 +36,30 @@ Actor.prototype.handleTrigger = function(triggerName) {
 };
 
 Actor.prototype.performTriggerAction = function(action, data) {
-  if(action === 'changeScene') {
-    this.stage.loadScene(data.destination);
-  }
-  else if(action === 'startAnimation') {
-    this.animations[data.name].start();
-  }
-  else if(action === 'startSpriteAnimation') {
-    this.sprite.startAnimation(data.name);
-  }
-  else if(action === 'broadcastTrigger') {
-    this.stage.broadcastTrigger(data.name, data.data);
-  }
-  else if(action === 'moveRelative') {
-    this.sprite.position.x += data.x;
-    this.sprite.position.y += data.y;
-  }
-  else if(action === 'setHidden') {
-    this.sprite.visible = data;
+  switch(action) {
+    case 'changeScene':
+      this.stage.loadScene(data.destination);
+      break;
+    case 'startAnimation':
+      this.animations[data.name].start();
+      break;
+    case 'startSpriteAnimation':
+      this.sprite.startAnimation(data.name);
+      break;
+    case 'broadcastTrigger':
+      this.stage.broadcastTrigger(data.name, data.data);
+      break;
+    case 'moveRelative':
+      this.sprite.position.x += data.x;
+      this.sprite.position.y += data.y;
+      break;
+    case 'setPosition':
+      this.sprite.position.x = data.x;
+      this.sprite.position.y = data.y;
+      break;
+    case 'setHidden':
+      this.sprite.visible = data;
+      break;
   }
 };
 
