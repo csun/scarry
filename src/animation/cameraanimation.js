@@ -26,6 +26,9 @@ CameraAnimation.prototype._advanceFrameByPercentage = function(percentage) {
   if('zoom' in frame) {
     this._camera.zoom(frame.zoom * percentage);
   }
+  if('fade' in frame) {
+    this._camera.fade(frame.fade * percentage);
+  }
 };
 
 module.exports = CameraAnimation;

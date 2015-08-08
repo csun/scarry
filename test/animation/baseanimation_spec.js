@@ -90,4 +90,13 @@ describe('BaseAnimation', function() {
 
     expect(animation.percentageAdvances.length).to.equal(TOTAL_FRAMES);
   });
+
+  it('should not reset to first frame after playing', function() {
+    animation = new TestAnimation();
+
+    animation.start();
+    animation.update(FRAME_TIMING * TOTAL_FRAMES);
+
+    expect(animation._currentFrame).to.equal(TOTAL_FRAMES - 1);
+  });
 });

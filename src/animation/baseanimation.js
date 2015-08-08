@@ -56,19 +56,24 @@ BaseAnimation.prototype._handleCurrentFrame = function() {
   this._frameElapsed += usableTime;
 
   if(this._frameElapsed >= this._currentFrameTiming()) {
+    // Don't just do a straight reset here so that the animation
+    // will still display the last frame
     this._nextFrame();
   }
 };
 
 BaseAnimation.prototype._nextFrame = function() {
+  if(!this.loop && this._currentFrame + 1 === this._totalFrameCount()) {
+    // Don't just reset here to keep last frame displayed
+    this.active = false;
+    return;
+  }
+
   this._currentFrame++;
   this._frameElapsed = 0;
 
   if(this.loop) {
     this._currentFrame %= this._totalFrameCount();
-  }
-  else if(this._currentFrame >= this._totalFrameCount()) {
-    this.reset();
   }
 };
 

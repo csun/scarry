@@ -22,6 +22,8 @@ Camera.prototype.handleSceneChange = function(cameraData) {
     this.container.position.y = -cameraData.position.y;
   }
 
+  this.container.alpha = -cameraData.fade || 1;
+
   this.triggerHandler.loadTriggers(cameraData.triggers);
   this.loadAnimations(cameraData.animations);
 };
@@ -40,6 +42,8 @@ Camera.prototype.loadAnimations = function(animations) {
 };
 
 Camera.prototype.reset = function() {
+  this.container.alpha = 1;
+
   this.container.position.x = 0;
   this.container.position.y = 0;
 
@@ -89,6 +93,10 @@ Camera.prototype.zoomTo = function(level) {
 
 Camera.prototype.zoom = function(amount) {
   this.zoomTo(this.currentZoom + amount);
+};
+
+Camera.prototype.fade = function(amount) {
+  this.container.alpha -= amount;
 };
 
 Camera.prototype.update = function(dt) {
