@@ -57,7 +57,7 @@ Actor.prototype.performTriggerAction = function(action, data) {
       this.sprite.position.x = data.x;
       this.sprite.position.y = data.y;
       break;
-    case 'fadeRelative':
+    case 'fade':
       this.sprite.alpha -= data;
       this.sprite.alpha = Math.max(0, Math.min(1, this.sprite.alpha));
       break;

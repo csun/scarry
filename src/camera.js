@@ -21,6 +21,9 @@ Camera.prototype.handleSceneChange = function(cameraData) {
     this.container.position.x = -cameraData.position.x;
     this.container.position.y = -cameraData.position.y;
   }
+  if(cameraData.zoom) {
+    this.zoomTo(cameraData.zoom);
+  }
 
   this.container.alpha = -cameraData.fade || 1;
 
