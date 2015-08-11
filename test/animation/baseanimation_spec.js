@@ -8,10 +8,10 @@ var BaseAnimation = require('../../src/animation/baseanimation');
 var FRAME_TIMING = 1000;
 var TOTAL_FRAMES = 10;
 
-function TestAnimation(options) {
+function TestAnimation() {
   this.percentageAdvances = [];
 
-  BaseAnimation.call(this, options);
+  BaseAnimation.call(this);
 }
 TestAnimation.prototype = Object.create(BaseAnimation.prototype);
 
@@ -59,12 +59,25 @@ describe('BaseAnimation', function() {
   });
 
   it('can loop', function() {
-    animation = new TestAnimation({ loop: true });
-    animation.start();
+    animation.start({ loop: true });
     
     animation.update(FRAME_TIMING * TOTAL_FRAMES);
     expect(animation.percentageAdvances.length).to.equal(TOTAL_FRAMES);
 
+    animation.update(FRAME_TIMING * TOTAL_FRAMES);
+    expect(animation.percentageAdvances.length).to.equal(TOTAL_FRAMES * 2);
+  });
+
+  it('can loop a set amount of times', function() {
+    animation.start({ loop: 1 });
+    
+    animation.update(FRAME_TIMING * TOTAL_FRAMES);
+    expect(animation.percentageAdvances.length).to.equal(TOTAL_FRAMES);
+
+    animation.update(FRAME_TIMING * TOTAL_FRAMES);
+    expect(animation.percentageAdvances.length).to.equal(TOTAL_FRAMES * 2);
+
+    // Should only loop the first time.
     animation.update(FRAME_TIMING * TOTAL_FRAMES);
     expect(animation.percentageAdvances.length).to.equal(TOTAL_FRAMES * 2);
   });
@@ -79,18 +92,6 @@ describe('BaseAnimation', function() {
     expect(animation.percentageAdvances.length).to.equal(TOTAL_FRAMES * 2);
   });
 
-  it('can limit the amount of times it is played', function() {
-    animation = new TestAnimation({ maxPlayCount: 1 });
-
-    animation.start();
-    animation.update(FRAME_TIMING * TOTAL_FRAMES);
-
-    animation.start();
-    animation.update(FRAME_TIMING * TOTAL_FRAMES);
-
-    expect(animation.percentageAdvances.length).to.equal(TOTAL_FRAMES);
-  });
-
   it('should not reset to first frame after playing', function() {
     animation = new TestAnimation();
 
@@ -98,5 +99,13 @@ describe('BaseAnimation', function() {
     animation.update(FRAME_TIMING * TOTAL_FRAMES);
 
     expect(animation._currentFrame).to.equal(TOTAL_FRAMES - 1);
+  });
+
+  it('can play in reverse', function() {
+    animation.start({ reverse: true });
+
+    expect(animation._currentFrame).to.equal(TOTAL_FRAMES - 1);
+    animation.update(FRAME_TIMING * TOTAL_FRAMES);
+    expect(animation._currentFrame).to.equal(0);
   });
 });

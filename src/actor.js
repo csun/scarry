@@ -41,10 +41,10 @@ Actor.prototype.performTriggerAction = function(action, data) {
       this.stage.loadScene(data.destination);
       break;
     case 'startAnimation':
-      this.animations[data.name].start();
+      this.animations[data.name].start(data.options);
       break;
     case 'startSpriteAnimation':
-      this.sprite.startAnimation(data.name);
+      this.sprite.startAnimation(data.name, data.options);
       break;
     case 'broadcastTrigger':
       this.stage.broadcastTrigger(data.name, data.data);

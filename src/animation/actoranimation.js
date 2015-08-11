@@ -29,7 +29,7 @@ function processFrameData(action, data, percentage) {
   switch(action) {
     case 'moveRelative':
       return { x: data.x * percentage, y: data.y * percentage };
-    case 'fadeRelative':
+    case 'fade':
       return data * percentage;
     default:
       return data;

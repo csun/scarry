@@ -59,7 +59,7 @@ Camera.prototype.reset = function() {
 
 Camera.prototype.performTriggerAction = function(action, data) {
   if(action === 'startAnimation') {
-    this.animations[data.name].start();
+    this.animations[data.name].start(data.options);
   }
 };
 

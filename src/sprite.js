@@ -17,13 +17,13 @@ Sprite.prototype.update = function(dt) {
   }
 };
 
-Sprite.prototype.startAnimation = function(name) {
+Sprite.prototype.startAnimation = function(name, options) {
   if(this._currentAnimation) {
     this._currentAnimation.reset();
   }
 
   this._currentAnimation = this.animations[name];
-  this._currentAnimation.start();
+  this._currentAnimation.start(options);
 };
 
 module.exports = Sprite;
