@@ -42,10 +42,16 @@ Stage.prototype.loadScene = function(sceneName) {
   this.broadcastTrigger('onLoad');
 };
 
-Stage.prototype.setBackground = function(imageName) {
-  var sprite = spriteManager.createSprite(imageName);
+// Can either be a sprite or a flat color
+Stage.prototype.setBackground = function(background) {
+  if(typeof background === 'string') {
+    var sprite = spriteManager.createSprite(imageName);
 
-  this.container.addChild(sprite);
+    this.container.addChild(sprite);
+  }
+  else {
+    this.renderer.backgroundColor = background;
+  }
 };
 
 Stage.prototype.createActor = function(actorData) {
