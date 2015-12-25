@@ -12,7 +12,12 @@ To build, clone this repository and run `npm install`. This will create `scarry.
 
 *Actors* are pictures within the scene that need to be animated or interacted with. These might be characters, buttons, or any other picture that needs to be handled separately from the static parts of the scene.
 
+# More Utilities
+*Controls* are a set of named actors which appear in every scene by default. These can be used for things like next/previous scene buttons. Scenes can choose to disable individual controls.
+
+*minify_story.js* is a script that takes in a directory full of parts of a whole story file and combines them into the single story file format that scarry expects. It does this by adding key/value pairs from each partial to a top-level dictionary, or recursively merging dictionary values from the partial with the related existing dictionary. Attempts to overwrite previously defined values will cause errors. This is useful because story files are very verbose, and can grow to be huge spaghetti messes. You can check out how the [jiyun](https://github.com/igpay/jiyun/tree/master/parts) project breaks up its story into partials. The script can be run with `node minify_story.js <PARTIALS_DIRECTORY> <OUTPUT_FILE>` and requires the js-yaml module.
+
 # Usage Specifics
 To start using scarry, you must specify two things with a call to `scarry.init()`. In the options object, you must pass a `size` object with the appropriate `width` and `height` of your rendering area. In addition, you must pass a `storyFile`, which is a path to the yaml file that describes your entire story.
 
-To see an example story file, take a look at the examples folder.
+To see an example story file, take a look at the [jiyun](https://github.com/igpay/jiyun/tree/master/stories) project.

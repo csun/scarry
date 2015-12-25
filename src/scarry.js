@@ -14,6 +14,7 @@ scarry.init = function(options) {
     var stageOptions = {
       realSize: options.size,
       sceneSize: story.sceneSize,
+      controls: story.controls,
       fonts: story.fonts
     };
     scarry.stage = new Stage(story.scenes, stageOptions);

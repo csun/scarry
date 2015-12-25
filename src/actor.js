@@ -40,6 +40,12 @@ Actor.prototype.performTriggerAction = function(action, data) {
     case 'changeScene':
       this.stage.loadScene(data.destination);
       break;
+    case 'nextScene':
+      this.stage.nextScene();
+      break;
+    case 'prevScene':
+      this.stage.prevScene();
+      break;
     case 'startAnimation':
       this.animations[data.name].start(data.options);
       break;

@@ -20,6 +20,10 @@ function Stage(scenes, options) {
   this.textManager = new TextManager(options.fonts, this.container);
   this.camera = new Camera(this.container, options.sceneSize);
 
+  this.sceneStack = [];
+  this.controls = options.controls || {};
+  this.currentScene = null;
+
   this.scenes = scenes;
   this.actors = [];
 }
@@ -36,16 +40,43 @@ Stage.prototype.loadScene = function(sceneName) {
     this.createActor(scene.actors[i]);
   }
 
-  // Display here so that text overlays all actors
+  // Display here so that text overlays all actors...
   this.textManager.displayText(scene.texts);
 
+  // Except for controls
+  var controlNames = Object.keys(this.controls);
+  for(i = 0; i < controlNames.length; i++) {
+    var name = controlNames[i];
+    if(!('disabledControls' in scene) || scene.disabledControls.indexOf(name) === -1) {
+      this.createActor(this.controls[name]);
+    }
+  }
+
+  if(this.currentScene !== null) {
+    this.sceneStack.push(this.currentScene);
+  }
+  this.currentScene = sceneName;
+
   this.broadcastTrigger('onLoad');
+};
+
+Stage.prototype.nextScene = function() {
+  var scene = this.scenes[this.currentScene];
+  if('nextScene' in scene) {
+    this.loadScene(scene.nextScene);
+  }
+};
+
+Stage.prototype.prevScene = function() {
+  if(this.sceneStack.length > 0) {
+    this.loadScene(this.sceneStack.pop());
+  }
 };
 
 // Can either be a sprite or a flat color
 Stage.prototype.setBackground = function(background) {
   if(typeof background === 'string') {
-    var sprite = spriteManager.createSprite(imageName);
+    var sprite = spriteManager.createSprite(background);
 
     this.container.addChild(sprite);
   }
