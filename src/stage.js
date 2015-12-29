@@ -56,6 +56,7 @@ Stage.prototype.loadScene = function(sceneName) {
     this.sceneStack.push(this.currentScene);
   }
   this.currentScene = sceneName;
+  // TODO this pushes scenes even after prevScene
 
   this.broadcastTrigger('onLoad');
 };
@@ -70,6 +71,9 @@ Stage.prototype.nextScene = function() {
 Stage.prototype.prevScene = function() {
   if(this.sceneStack.length > 0) {
     this.loadScene(this.sceneStack.pop());
+    // We pop again here because the last scene we were in, (now the "next" scene,)
+    // was added to the stack by loadScene
+    this.sceneStack.pop();
   }
 };
 
