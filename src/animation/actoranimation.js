@@ -31,6 +31,8 @@ function processFrameData(action, data, percentage) {
       return { x: data.x * percentage, y: data.y * percentage };
     case 'fade':
       return data * percentage;
+    case 'rotate':
+      return data * percentage;
     default:
       return data;
   }

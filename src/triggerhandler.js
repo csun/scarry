@@ -53,6 +53,7 @@ TriggerHandler.prototype._activateAction = function(action) {
   var performAction = function() { target.performTriggerAction(action.action, action.data); };
 
   if(action.delay) {
+    // TODO be able to cancel delayed actions when scene changes
     setTimeout(performAction, action.delay);
   }
   else {

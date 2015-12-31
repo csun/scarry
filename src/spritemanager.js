@@ -100,7 +100,7 @@ function loadComplexSprite(name, spriteData) {
 
     spritesheetData[name] = {
       frameCounts: spriteData.frameCounts,
-      defaultFrame: spriteData.defaultFrame,
+      defaultFrame: spriteData.defaultFrame || { 'x': 0, 'y': 0 },
       animations: spriteData.animations
     };
   }

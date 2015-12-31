@@ -12,6 +12,11 @@ function Actor(stage, options) {
     'y': options.position.y
   };
 
+  if(options.anchor) {
+    this.sprite.anchor.x = options.anchor.x;
+    this.sprite.anchor.y = options.anchor.y;
+  }
+
   this.sprite.scale.x = options.scale || 1;
   this.sprite.scale.y = options.scale || 1;
 
@@ -68,6 +73,9 @@ Actor.prototype.performTriggerAction = function(action, data) {
     case 'setPosition':
       this.sprite.position.x = data.x;
       this.sprite.position.y = data.y;
+      break;
+    case 'rotate':
+      this.sprite.rotation += (data * (3.14159 / 180));
       break;
     case 'fade':
       this.sprite.alpha -= data;
