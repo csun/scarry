@@ -4,7 +4,13 @@ var TriggerHandler = require('./triggerhandler');
 
 function Actor(stage, options) {
   this.sprite = spriteManager.createSprite(options.sprite);
-  this.sprite.position = options.position;
+
+  // We need to copy instead of referencing. Otherwise positional
+  // animations will cause permanent changes when going back to a scene.
+  this.sprite.position = {
+    'x': options.position.x,
+    'y': options.position.y
+  };
 
   this.sprite.scale.x = options.scale || 1;
   this.sprite.scale.y = options.scale || 1;
