@@ -1,16 +1,35 @@
+var PIXI = require('pixi.js');
 var TriggerHandler = require('./triggerhandler');
 var CameraAnimation = require('./animation/cameraanimation');
 
 function Camera(container, sceneSize) {
   this.container = container;
-
-  this.currentZoom = 0;
-
   this.sceneSize = sceneSize;
-
   this.animations = {};
+
+  this.createFadeMask();
   this.triggerHandler = new TriggerHandler(null, this);
+
+  this.reset();
 }
+
+Camera.prototype.createFadeMask = function() {
+  // Fading by changing container.alpha looks weird,
+  // create a mask instead and fade it in.
+  this.fadeMask = new PIXI.Graphics();
+  this.container.addChild(this.fadeMask);
+  this.fadeMask.beginFill(0x000000, 1);
+  this.fadeMask.drawRect(0, 0, this.sceneSize.width, this.sceneSize.height);
+  this.fadeMask.position.x = 0;
+  this.fadeMask.position.y = 0;
+};
+
+
+Camera.prototype.resetFadeMask = function() {
+  this.container.addChild(this.fadeMask);
+  this.container.setChildIndex(this.fadeMask, this.container.children.length - 1);
+};
+
 
 Camera.prototype.handleSceneChange = function(cameraData) {
   this.reset();
@@ -25,7 +44,7 @@ Camera.prototype.handleSceneChange = function(cameraData) {
     this.zoomTo(cameraData.zoom);
   }
 
-  this.container.alpha = -cameraData.fade || 1;
+  this.fadeMask.alpha = cameraData.fade || 0;
 
   this.triggerHandler.loadTriggers(cameraData.triggers);
   this.loadAnimations(cameraData.animations);
@@ -45,8 +64,6 @@ Camera.prototype.loadAnimations = function(animations) {
 };
 
 Camera.prototype.reset = function() {
-  this.container.alpha = 1;
-
   this.container.position.x = 0;
   this.container.position.y = 0;
 
@@ -55,6 +72,7 @@ Camera.prototype.reset = function() {
   this.container.scale.y = 1;
 
   this.container.rotation = 0;
+  this.resetFadeMask();
 };
 
 Camera.prototype.performTriggerAction = function(action, data) {
@@ -64,6 +82,12 @@ Camera.prototype.performTriggerAction = function(action, data) {
 };
 
 Camera.prototype.handleTrigger = function(triggerName) {
+  // Reset fademask after every scene load to get it on top of
+  // all other children
+  if(triggerName === 'onLoad') {
+    this.resetFadeMask();
+  }
+
   this.triggerHandler.handle(triggerName);
 };
 
@@ -99,7 +123,7 @@ Camera.prototype.zoom = function(amount) {
 };
 
 Camera.prototype.fade = function(amount) {
-  this.container.alpha -= amount;
+  this.fadeMask.alpha += amount;
 };
 
 Camera.prototype.update = function(dt) {
