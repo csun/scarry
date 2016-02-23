@@ -35,8 +35,12 @@ Stage.prototype.loadScene = function(sceneName) {
   this.camera.handleSceneChange(scene.camera);
   this.setBackground(scene.background);
 
+  for(var i = 0; i < this.actors.length; i++) {
+    this.actors[i].triggerHandler.clearDelayedActivations();
+  }
+
   this.actors = [];
-  for(var i = 0; scene.actors && i < scene.actors.length; i++) {
+  for(i = 0; scene.actors && i < scene.actors.length; i++) {
     this.createActor(scene.actors[i]);
   }
 

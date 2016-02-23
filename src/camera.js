@@ -73,6 +73,7 @@ Camera.prototype.reset = function() {
 
   this.container.rotation = 0;
   this.resetFadeMask();
+  this.triggerHandler.clearDelayedActivations();
 };
 
 Camera.prototype.performTriggerAction = function(action, data) {

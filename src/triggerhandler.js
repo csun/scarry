@@ -4,6 +4,7 @@
 // function.
 function TriggerHandler(triggersData, triggerable) {
   this.target = triggerable;
+  this.delayedActivations = [];
 
   this.loadTriggers(triggersData);
 }
@@ -44,6 +45,14 @@ TriggerHandler.prototype.handle = function(triggerName) {
   }
 };
 
+TriggerHandler.prototype.clearDelayedActivations = function() {
+  for(var i = 0; i < this.delayedActivations.length; i++) {
+    clearTimeout(this.delayedActivations[i]);
+  }
+
+  this.delayedActivations = [];
+};
+
 TriggerHandler.prototype._activateAction = function(action) {
   if(action.maxActivations && (action.activations >= action.maxActivations)) {
     return;
@@ -53,8 +62,7 @@ TriggerHandler.prototype._activateAction = function(action) {
   var performAction = function() { target.performTriggerAction(action.action, action.data); };
 
   if(action.delay) {
-    // TODO be able to cancel delayed actions when scene changes
-    setTimeout(performAction, action.delay);
+    this.delayedActivations.push(setTimeout(performAction, action.delay));
   }
   else {
     performAction();
