@@ -15,11 +15,12 @@ scarry.init = function(options) {
       realSize: options.size,
       sceneSize: story.sceneSize,
       controls: story.controls,
-      fonts: story.fonts
+      fonts: story.fonts,
+      containerElement: options.containerElement || document.body
     };
     scarry.stage = new Stage(story.scenes, stageOptions);
 
-    document.body.appendChild(scarry.stage.renderer.view);
+    stageOptions.containerElement.appendChild(scarry.stage.renderer.view);
     
     spriteManager.load(story.sprites, function() {
       scarry.stage.loadScene(story.entryScene);
