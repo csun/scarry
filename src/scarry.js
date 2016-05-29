@@ -21,11 +21,14 @@ scarry.init = function(options) {
     scarry.stage = new Stage(story.scenes, stageOptions);
 
     stageOptions.containerElement.appendChild(scarry.stage.renderer.view);
-    
-    spriteManager.load(story.sprites, function() {
+
+    completionCallback = function () {
       scarry.stage.loadScene(story.entryScene);
       requestAnimationFrame(scarry.animationFrame);
-    });
+    };
+
+    spriteManager.load(
+        story.sprites, options.loadingCallback, completionCallback);
   });
 };
 
@@ -51,7 +54,7 @@ function getStory(url, callback) {
       callback(data);
     }
     else {
-      callback(null, 'There was an error accessing the json.');
+      callback(null, 'There was an error reading the yaml.');
     }
   };
 

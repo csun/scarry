@@ -10,7 +10,7 @@ var defaultTextures = {};
 var animationFrames = {};
 var spritesheetData = {};
 
-spriteManager.load = function(sprites, callback) {
+spriteManager.load = function(sprites, loadingCallback, completionCallback) {
   for(var spriteName in sprites) {
     var spriteData = sprites[spriteName];
 
@@ -26,8 +26,18 @@ spriteManager.load = function(sprites, callback) {
   textureLoader.once('complete', function() {
     spriteManager._createAnimationFrames();
     spriteManager._setDefaultTextures(Object.keys(sprites));
-    callback();
+    completionCallback();
   });
+
+  if(loadingCallback) {
+    var texturesLoaded = 0;
+    var totalTextures = Object.keys(sprites).length;
+
+    textureLoader.on('progress', function() {
+      texturesLoaded++;
+      loadingCallback(texturesLoaded / totalTextures);
+    });
+  }
 
   textureLoader.load();
 };
@@ -90,7 +100,7 @@ spriteManager.createSprite = function(name) {
       sprite.animations[animationName] = new SpriteAnimation(sprite, animationFrames[name][animationName], fps, options);
     }
   }
-  
+
   return sprite;
 };
 
