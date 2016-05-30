@@ -48,7 +48,16 @@ BaseAnimation.prototype._totalFrameCount = function() {
 
 BaseAnimation.prototype._handleCurrentFrame = function() {
   var usableTime = Math.min(this._remainingDelta, this._currentFrameTiming() - this._frameElapsed);
-  var percentOfTotal = usableTime / this._currentFrameTiming();
+  var percentOfTotal;
+
+  var frameTiming = this._currentFrameTiming();
+  if(frameTiming) {
+    // Allow us to have 0 length frames and still get correct behavior.
+    percentOfTotal = usableTime / frameTiming;
+  }
+  else {
+    percentOfTotal = 1;
+  }
 
   this._advanceFrameByPercentage(percentOfTotal);
 
